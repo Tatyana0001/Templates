@@ -1,5 +1,4 @@
 ﻿#include <iostream>
-#include <mutex>
 #include <fstream>
 
 class LogMessage {

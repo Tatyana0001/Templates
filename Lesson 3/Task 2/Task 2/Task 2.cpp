@@ -21,8 +21,7 @@ public:
     ErrorObserver() = delete;
     explicit ErrorObserver(const std::string& filename) : filename_(filename) {}
     void onError(const std::string& message) const override {
-        std::ofstream fout;
-        fout.open(filename_, std::ios_base::app);
+        std::ofstream fout(filename_);
         if(fout.is_open()) {
             fout << "Error: " << message << "\n";
             fout.close();
@@ -66,27 +65,27 @@ public:
             observer->onFatalError(message);
         }
     }
-    void AddWarningObservers(const Observer& observer) {
-        WarningObservers.push_back(&observer);
+    void AddWarningObservers(Observer const* observer) {
+        WarningObservers.push_back(observer);
     }
-    void AddErrorObservers(const Observer& observer) {
-        ErrorObservers.push_back(&observer);
+    void AddErrorObservers(Observer const* observer) {
+        ErrorObservers.push_back(observer);
     }
-    void AddFatalErrorObservers(const Observer& observer) {
-        FatalErrorObservers.push_back(&observer);
+    void AddFatalErrorObservers(Observer const* observer) {
+        FatalErrorObservers.push_back(observer);
     }
 private:
-    std::vector <const Observer*> WarningObservers;
-    std::vector <const Observer*> ErrorObservers;
-    std::vector <const Observer*> FatalErrorObservers;
+    std::vector <Observer const*> WarningObservers;
+    std::vector <Observer const*> ErrorObservers;
+    std::vector <Observer const*> FatalErrorObservers;
 };
 
 int main()
 {
     Observed obs;
-    obs.AddWarningObservers(WarningObserver());
-    obs.AddErrorObservers(ErrorObserver("error.txt"));
-    obs.AddFatalErrorObservers(FatalErrorObserver("fatalerror.txt"));
+    obs.AddWarningObservers(new WarningObserver());
+    obs.AddErrorObservers(new ErrorObserver("error.txt"));
+    obs.AddFatalErrorObservers(new FatalErrorObserver("fatalerror.txt"));
     obs.warning("Warning message");
     obs.error("Error message");
     obs.fatalError("Fatal Error message");
